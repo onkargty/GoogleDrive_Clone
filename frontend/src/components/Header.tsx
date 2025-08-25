@@ -1,18 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useDrive } from '../contexts/DriveContext';
-import { 
-  HardDrive, 
-  Search, 
-  Grid3X3, 
-  List, 
-  Settings, 
-  User, 
-  LogOut,
-  Plus,
-  Upload,
-  FolderPlus
-} from 'lucide-react';
+import { HardDrive, Search, Grid as Grid3X3, List, Settings, User, LogOut, Plus, Upload, FolderPlus } from 'lucide-react';
 import CreateFolderModal from './CreateFolderModal';
 
 const Header: React.FC = () => {
