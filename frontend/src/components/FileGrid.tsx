@@ -2,10 +2,10 @@ import React from 'react';
 import { useDrive } from '../contexts/DriveContext';
 import FileItem from './FileItem';
 import FolderItem from './FolderItem';
-import { Folder, FileText } from 'lucide-react';
+import { Folder, FileText, Grid3X3, List } from 'lucide-react';
 
 const FileGrid: React.FC = () => {
-  const { files, folders, loading } = useDrive();
+  const { files, folders, loading, viewMode, selectedItems, setSelectedItems } = useDrive();
 
   if (loading) {
     return (
@@ -16,6 +16,17 @@ const FileGrid: React.FC = () => {
   }
 
   const hasContent = folders.length > 0 || files.length > 0;
+
+  const handleSelectAll = () => {
+    if (selectedItems.length === files.length + folders.length) {
+      setSelectedItems([]);
+    } else {
+      const allIds = [...folders.map(f => f.id), ...files.map(f => f.id)];
+      setSelectedItems(allIds);
+    }
+  };
+
+  const isAllSelected = selectedItems.length === files.length + folders.length && hasContent;
 
   if (!hasContent) {
     return (
@@ -33,13 +44,46 @@ const FileGrid: React.FC = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-      {folders.map((folder) => (
-        <FolderItem key={folder.id} folder={folder} />
-      ))}
-      {files.map((file) => (
-        <FileItem key={file.id} file={file} />
-      ))}
+    <div>
+      {/* Selection Header */}
+      {hasContent && (
+        <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-200">
+          <div className="flex items-center space-x-4">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={isAllSelected}
+                onChange={handleSelectAll}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="ml-2 text-sm text-gray-600">
+                {selectedItems.length > 0 
+                  ? `${selectedItems.length} selected`
+                  : 'Select all'
+                }
+              </span>
+            </label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-500">
+              {folders.length + files.length} items
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Content Grid/List */}
+      <div className={viewMode === 'grid' 
+        ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
+        : "space-y-1"
+      }>
+        {folders.map((folder) => (
+          <FolderItem key={folder.id} folder={folder} viewMode={viewMode} />
+        ))}
+        {files.map((file) => (
+          <FileItem key={file.id} file={file} viewMode={viewMode} />
+        ))}
+      </div>
     </div>
   );
 };

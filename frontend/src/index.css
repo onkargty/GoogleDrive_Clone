@@ -8,20 +8,88 @@
   }
   
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-gray-50 text-gray-900 antialiased;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md;
   }
   
   .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg border border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md;
   }
   
   .card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200;
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200;
+  }
+
+  .context-menu {
+    @apply absolute bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px] z-50;
+  }
+
+  .context-menu-item {
+    @apply flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors duration-150;
+  }
+
+  .grid-view {
+    @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4;
+  }
+
+  .list-view {
+    @apply space-y-1;
+  }
+
+  .breadcrumb {
+    @apply flex items-center space-x-2 text-sm text-gray-600;
+  }
+
+  .breadcrumb-item {
+    @apply hover:text-blue-600 cursor-pointer transition-colors duration-150;
+  }
+
+  .upload-progress {
+    @apply fixed bottom-4 right-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4 min-w-[300px] z-50;
   }
 }
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Loading animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* File type colors */
+.file-pdf { @apply text-red-500; }
+.file-doc { @apply text-blue-500; }
+.file-xls { @apply text-green-500; }
+.file-ppt { @apply text-orange-500; }
+.file-img { @apply text-purple-500; }
+.file-vid { @apply text-pink-500; }
+.file-aud { @apply text-yellow-500; }
+.file-zip { @apply text-gray-500; }
+.file-txt { @apply text-gray-600; }

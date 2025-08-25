@@ -1,18 +1,48 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useDrive } from '../contexts/DriveContext';
-import { Upload, File } from 'lucide-react';
+import { Upload, File, X, CheckCircle, AlertCircle } from 'lucide-react';
 
 const UploadArea: React.FC = () => {
-  const { uploadFile, loading } = useDrive();
+  const { uploadFiles, loading } = useDrive();
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
+  const [uploadStatus, setUploadStatus] = useState<{ [key: string]: 'uploading' | 'completed' | 'error' }>({});
+
+  // Listen for file selection from header
+  React.useEffect(() => {
+    const handleFilesSelected = (event: CustomEvent) => {
+      const files = event.detail as File[];
+      onDrop(files);
+    };
+
+    window.addEventListener('filesSelected', handleFilesSelected as EventListener);
+    return () => {
+      window.removeEventListener('filesSelected', handleFilesSelected as EventListener);
+    };
+  }, []);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     for (const file of acceptedFiles) {
       try {
         setUploadProgress(prev => ({ ...prev, [file.name]: 0 }));
-        await uploadFile(file);
+        setUploadStatus(prev => ({ ...prev, [file.name]: 'uploading' }));
+        
+        // Simulate progress
+        const progressInterval = setInterval(() => {
+          setUploadProgress(prev => {
+            const current = prev[file.name] || 0;
+            if (current < 90) {
+              return { ...prev, [file.name]: current + 10 };
+            }
+            return prev;
+          });
+        }, 100);
+
+        await uploadFiles([file]);
+        
+        clearInterval(progressInterval);
         setUploadProgress(prev => ({ ...prev, [file.name]: 100 }));
+        setUploadStatus(prev => ({ ...prev, [file.name]: 'completed' }));
         
         // Remove progress after a delay
         setTimeout(() => {
@@ -21,8 +51,14 @@ const UploadArea: React.FC = () => {
             delete newProgress[file.name];
             return newProgress;
           });
+          setUploadStatus(prev => {
+            const newStatus = { ...prev };
+            delete newStatus[file.name];
+            return newStatus;
+          });
         }, 2000);
       } catch (error) {
+        setUploadStatus(prev => ({ ...prev, [file.name]: 'error' }));
         setUploadProgress(prev => {
           const newProgress = { ...prev };
           delete newProgress[file.name];
@@ -30,7 +66,7 @@ const UploadArea: React.FC = () => {
         });
       }
     }
-  }, [uploadFile]);
+  }, [uploadFiles]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -38,6 +74,14 @@ const UploadArea: React.FC = () => {
   });
 
   const hasUploads = Object.keys(uploadProgress).length > 0;
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   return (
     <div className="mb-8">
@@ -62,20 +106,40 @@ const UploadArea: React.FC = () => {
       {hasUploads && (
         <div className="mt-4 space-y-2">
           {Object.entries(uploadProgress).map(([fileName, progress]) => (
+            const status = uploadStatus[fileName];
+            const StatusIcon = status === 'completed' ? CheckCircle :
+                             status === 'error' ? AlertCircle : File;
+            const statusColor = status === 'completed' ? 'text-green-600' :
+                              status === 'error' ? 'text-red-600' : 'text-blue-600';
+
             <div key={fileName} className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center">
-                  <File className="h-4 w-4 text-gray-400 mr-2" />
+                  <StatusIcon className={`h-4 w-4 mr-2 ${statusColor}`} />
                   <span className="text-sm font-medium text-gray-900">{fileName}</span>
                 </div>
-                <span className="text-sm text-gray-500">{progress}%</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-500">
+                    {status === 'completed' ? 'Completed' : 
+                     status === 'error' ? 'Failed' : `${progress}%`}
+                  </span>
+                  {status === 'error' && (
+                    <button className="text-gray-400 hover:text-gray-600">
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-primary-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
+              {status !== 'completed' && status !== 'error' && (
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      status === 'error' ? 'bg-red-500' : 'bg-blue-600'
+                    }`}
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+              )}
             </div>
           ))}
         </div>

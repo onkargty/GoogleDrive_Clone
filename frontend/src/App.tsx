@@ -3,6 +3,10 @@ import { AuthProvider } from './contexts/AuthContext';
 import { DriveProvider } from './contexts/DriveContext';
 import AuthPage from './pages/AuthPage';
 import DrivePage from './pages/DrivePage';
+import SharedPage from './pages/SharedPage';
+import RecentPage from './pages/RecentPage';
+import StarredPage from './pages/StarredPage';
+import TrashPage from './pages/TrashPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -17,6 +21,38 @@ function App() {
               element={
                 <ProtectedRoute>
                   <DrivePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/shared"
+              element={
+                <ProtectedRoute>
+                  <SharedPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/recent"
+              element={
+                <ProtectedRoute>
+                  <RecentPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/starred"
+              element={
+                <ProtectedRoute>
+                  <StarredPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/trash"
+              element={
+                <ProtectedRoute>
+                  <TrashPage />
                 </ProtectedRoute>
               }
             />

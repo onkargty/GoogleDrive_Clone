@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import supabase from '../lib/supabase';
+import toast from 'react-hot-toast';
 
 interface AuthContextType {
   user: User | null;
@@ -9,6 +10,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,10 +39,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      if (event === 'SIGNED_IN') {
+        toast.success('Successfully signed in!');
+      } else if (event === 'SIGNED_OUT') {
+        toast.success('Successfully signed out!');
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -51,7 +59,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       password,
     });
-    if (error) throw error;
+    if (error) {
+      toast.error(error.message);
+      throw error;
+    }
   };
 
   const signUp = async (email: string, password: string) => {
@@ -59,12 +70,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       password,
     });
-    if (error) throw error;
+    if (error) {
+      toast.error(error.message);
+      throw error;
+    }
+    toast.success('Account created successfully!');
   };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    if (error) {
+      toast.error(error.message);
+      throw error;
+    }
+  };
+
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) {
+      toast.error(error.message);
+      throw error;
+    }
+    toast.success('Password reset email sent!');
   };
 
   const value = {
@@ -74,6 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signUp,
     signOut,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

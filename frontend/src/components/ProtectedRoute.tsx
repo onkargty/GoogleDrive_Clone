@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { HardDrive } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -11,8 +12,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="flex items-center justify-center text-gray-600">
+            <HardDrive className="h-5 w-5 mr-2" />
+            <span>Loading Drive...</span>
+          </div>
+        </div>
       </div>
     );
   }
