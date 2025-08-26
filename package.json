@@ -1,31 +1,41 @@
 {
   "name": "google-drive-clone",
   "version": "1.0.0",
-  "description": "A full-featured Google Drive clone with React frontend and Node.js backend",
+  "description": "A full-featured Google Drive clone",
   "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
+  "type": "module",
   "scripts": {
-    "dev": "npm run dev --workspace=frontend",
-    "build": "npm run build --workspace=frontend",
-    "preview": "npm run preview --workspace=frontend",
-    "dev:backend": "npm run dev --workspace=backend",
-    "build:backend": "npm run build --workspace=backend",
-    "start:backend": "npm run start --workspace=backend",
-    "install:all": "npm install && npm install --workspace=frontend && npm install --workspace=backend"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
-  "keywords": [
-    "google-drive",
-    "file-storage",
-    "react",
-    "nodejs",
-    "supabase"
-  ],
-  "author": "",
-  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0",
+    "lucide-react": "^0.263.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-dropzone": "^14.3.8",
+    "react-router-dom": "^6.15.0",
+    "react-hot-toast": "^2.4.1",
+    "uuid": "^9.0.0"
+  },
   "devDependencies": {
-    "@types/node": "^20.0.0"
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@types/uuid": "^9.0.2",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "postcss": "^8.4.27",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
   }
 }
