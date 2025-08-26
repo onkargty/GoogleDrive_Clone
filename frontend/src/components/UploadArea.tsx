@@ -105,14 +105,15 @@ const UploadArea: React.FC = () => {
 
       {hasUploads && (
         <div className="mt-4 space-y-2">
-          {Object.entries(uploadProgress).map(([fileName, progress]) => (
+          {Object.entries(uploadProgress).map(([fileName, progress]) => {
             const status = uploadStatus[fileName];
             const StatusIcon = status === 'completed' ? CheckCircle :
                              status === 'error' ? AlertCircle : File;
             const statusColor = status === 'completed' ? 'text-green-600' :
                               status === 'error' ? 'text-red-600' : 'text-blue-600';
 
-            <div key={fileName} className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+            return (
+              <div key={fileName} className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center">
                   <StatusIcon className={`h-4 w-4 mr-2 ${statusColor}`} />
@@ -140,8 +141,9 @@ const UploadArea: React.FC = () => {
                   ></div>
                 </div>
               )}
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

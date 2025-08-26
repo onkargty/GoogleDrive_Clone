@@ -2,7 +2,9 @@ import React from 'react';
 import { useDrive } from '../contexts/DriveContext';
 import FileItem from './FileItem';
 import FolderItem from './FolderItem';
-import { Folder, FileText, Grid as Grid3X3, List } from 'lucide-react'id: React.FC = () => {
+import { Folder, FileText, Grid as Grid3X3, List } from 'lucide-react';
+
+const FileGrid: React.FC = () => {
   const { files, folders, loading } = useDrive();
 
   if (loading) {
